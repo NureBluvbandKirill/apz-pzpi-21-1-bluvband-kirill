@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\ThermoTsev.Backend.DAL\ThermoTsev.Backend.DAL.csproj" />
+    </ItemGroup>
+
 </Project>
