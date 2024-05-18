@@ -30,18 +30,20 @@ public class UserService(DataContext context) : IUserService
         {
             throw new ArgumentException("User already exists.");
         }
-        
+
         (string hashedPassword, string salt) = HashPassword(user.Password);
-        
-        context.Users.Add(new User
-        {
-            Name = user.Name,
-            Role = user.Role,
-            Email = user.Email,
-            PasswordHashed = hashedPassword,
-            PasswordSalt = salt,
-        });
-        
+
+        context.Users.Add(
+            new User
+            {
+                Name = user.Name,
+                Role = user.Role,
+                Email = user.Email,
+                PasswordHashed = hashedPassword,
+                PasswordSalt = salt,
+            }
+        );
+
         await context.SaveChangesAsync();
     }
 
@@ -50,18 +52,18 @@ public class UserService(DataContext context) : IUserService
         ArgumentNullException.ThrowIfNull(user);
 
         User? userDb = await context.FindAsync<User>(id);
-        
+
         if (userDb == null)
         {
             throw new ArgumentNullException(nameof(user));
         }
-        
+
         userDb.Name = user.Name;
         userDb.Email = user.Email;
         userDb.Role = user.Role;
-        
+
         context.Users.Update(userDb);
-        
+
         await context.SaveChangesAsync();
     }
 
@@ -74,7 +76,7 @@ public class UserService(DataContext context) : IUserService
             await context.SaveChangesAsync();
         }
     }
-    
+
     public async Task<bool> SignUpAsync(SignUpDto signUpDto)
     {
         User? existingUser = await context.Users.FirstOrDefaultAsync(u => u.Email == signUpDto.Email);
@@ -83,9 +85,9 @@ public class UserService(DataContext context) : IUserService
         {
             return false;
         }
-        
+
         (string hashedPassword, string salt) = HashPassword(signUpDto.Password);
-        
+
         User newUser = new User
         {
             Name = signUpDto.Name,
@@ -100,23 +102,30 @@ public class UserService(DataContext context) : IUserService
 
         return true;
     }
-    
+
     public async Task<User?> LoginAsync(string email, string password)
     {
         User? user = await context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        
-        if (user != null && IsPasswordValid(password, user.PasswordHashed, user.PasswordSalt))
+
+        if (user != null && IsPasswordValid(
+                password,
+                user.PasswordHashed,
+                user.PasswordSalt
+            ))
         {
             return user;
         }
 
         return null;
     }
-    
+
     private static (string hashedPassword, string salt) HashPassword(string password)
     {
         byte[] saltBytes = RandomNumberGenerator.GetBytes(16);
-        byte[] combinedBytes = Encoding.UTF8.GetBytes(password).Concat(saltBytes).ToArray();
+        byte[] combinedBytes = Encoding.UTF8
+            .GetBytes(password)
+            .Concat(saltBytes)
+            .ToArray();
         byte[] hashedBytes = SHA256.HashData(combinedBytes);
         string hashedPassword = Convert.ToBase64String(hashedBytes);
 
@@ -128,8 +137,18 @@ public class UserService(DataContext context) : IUserService
         byte[] enteredPasswordBytes = Encoding.UTF8.GetBytes(enteredPassword);
         byte[] saltBytes = Convert.FromBase64String(salt);
         byte[] saltedPasswordBytes = new byte[enteredPasswordBytes.Length + saltBytes.Length];
-        Array.Copy(enteredPasswordBytes, saltedPasswordBytes, enteredPasswordBytes.Length);
-        Array.Copy(saltBytes, 0, saltedPasswordBytes, enteredPasswordBytes.Length, saltBytes.Length);
+        Array.Copy(
+            enteredPasswordBytes,
+            saltedPasswordBytes,
+            enteredPasswordBytes.Length
+        );
+        Array.Copy(
+            saltBytes,
+            0,
+            saltedPasswordBytes,
+            enteredPasswordBytes.Length,
+            saltBytes.Length
+        );
         byte[] hashedBytes = SHA256.HashData(saltedPasswordBytes);
         string enteredHash = Convert.ToBase64String(hashedBytes);
 

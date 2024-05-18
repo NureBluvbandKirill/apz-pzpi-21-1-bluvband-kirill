@@ -53,38 +53,46 @@ public class ShipmentService(DataContext context) : IShipmentService
     {
         try
         {
-            EntityEntry<Location> startLocation = context.Locations.Add(new Location()
-            {
-                Latitude = shipment.StartLocationLatitude,
-                Longitude = shipment.StartLocationLongitude,
-            });
-            
-            EntityEntry<Location> endLocation = context.Locations.Add(new Location()
-            {
-                Latitude = shipment.EndLocationLatitude,
-                Longitude = shipment.EndLocationLongitude,
-            });
+            EntityEntry<Location> startLocation = context.Locations.Add(
+                new Location()
+                {
+                    Latitude = shipment.StartLocationLatitude,
+                    Longitude = shipment.StartLocationLongitude,
+                }
+            );
 
-            EntityEntry<ShipmentCondition> shipmentCondition = context.ShipmentConditions.Add(new ShipmentCondition()
-            {
-                MinTemperature = shipment.MinTemperature,
-                MaxTemperature = shipment.MaxTemperature,
-                MinHumidity = shipment.MinHumidity,
-                MaxHumidity = shipment.MaxHumidity,
-            });
-            
+            EntityEntry<Location> endLocation = context.Locations.Add(
+                new Location()
+                {
+                    Latitude = shipment.EndLocationLatitude,
+                    Longitude = shipment.EndLocationLongitude,
+                }
+            );
+
+            EntityEntry<ShipmentCondition> shipmentCondition = context.ShipmentConditions.Add(
+                new ShipmentCondition()
+                {
+                    MinTemperature = shipment.MinTemperature,
+                    MaxTemperature = shipment.MaxTemperature,
+                    MinHumidity = shipment.MinHumidity,
+                    MaxHumidity = shipment.MaxHumidity,
+                }
+            );
+
             User? foundedUser = context.Users.FirstOrDefault(u => u.Id == userId);
-            
-            context.Shipments.Add(new Shipment()
-            {
-                StartDate = shipment.StartDate,
-                StartLocation = startLocation.Entity,
-                EndDate = shipment.EndDate,
-                EndLocation = endLocation.Entity,
-                ShipmentCondition = shipmentCondition.Entity,
-                Status = ShipmentStatus.Pending,
-                User = foundedUser,
-            });
+
+            context.Shipments.Add(
+                new Shipment()
+                {
+                    StartDate = shipment.StartDate,
+                    StartLocation = startLocation.Entity,
+                    EndDate = shipment.EndDate,
+                    EndLocation = endLocation.Entity,
+                    ShipmentCondition = shipmentCondition.Entity,
+                    Status = ShipmentStatus.Pending,
+                    User = foundedUser,
+                }
+            );
             context.SaveChanges();
             return Result.Ok(shipment);
         }
@@ -103,7 +111,7 @@ public class ShipmentService(DataContext context) : IShipmentService
                 .Include(s => s.EndLocation)
                 .Include(s => s.ShipmentCondition)
                 .FirstOrDefault(s => s.Id == updatedShipment.Id);
-        
+
             if (existingShipment == null)
                 return Result.Fail<UpdateShipmentDto>("Shipment not found");
 
@@ -118,9 +126,9 @@ public class ShipmentService(DataContext context) : IShipmentService
             existingShipment.ShipmentCondition.MinHumidity = updatedShipment.MinHumidity;
             existingShipment.ShipmentCondition.MaxHumidity = updatedShipment.MaxHumidity;
             existingShipment.Status = updatedShipment.Status;
-            
+
             context.SaveChanges();
-        
+
             return Result.Ok(updatedShipment);
         }
         catch (Exception ex)
@@ -151,6 +159,8 @@ public class ShipmentService(DataContext context) : IShipmentService
 
     public List<Shipment> GetShipmentsByStatus(ShipmentStatus status)
     {
-        return context.Shipments.Where(s => s.Status == status).ToList();
+        return context.Shipments
+            .Where(s => s.Status == status)
+            .ToList();
     }
 }

@@ -22,7 +22,10 @@ public class NotificationService(DataContext context) : INotificationService
         List<Notification> notifications = await context.Notifications
             .ToListAsync();
 
-        return Result.Ok(notifications.Select(n => new NotificationDto(n.Message, n.isRead)).ToList());
+        return Result.Ok(
+            notifications.Select(n => new NotificationDto(n.Message, n.isRead))
+                .ToList()
+        );
     }
 
     public async Task<Result<NotificationDto>> CreateNotification(int userId, NotificationDto notificationDto)
@@ -34,7 +37,7 @@ public class NotificationService(DataContext context) : INotificationService
             isRead = notificationDto.IsRead,
             User = foundedUser,
         };
-       
+
         context.Notifications.Add(notification);
         await context.SaveChangesAsync();
 
