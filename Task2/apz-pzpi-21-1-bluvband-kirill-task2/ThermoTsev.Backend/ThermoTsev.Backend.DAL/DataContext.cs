@@ -11,6 +11,8 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
 
     public DbSet<Shipment> Shipments { get; set; } = null!;
 
+    public DbSet<Location> Locations { get; set; } = null!;
+
     public DbSet<ShipmentCondition> ShipmentConditions { get; set; } = null!;
 
     public DbSet<Analytic> Analytics { get; set; } = null!;

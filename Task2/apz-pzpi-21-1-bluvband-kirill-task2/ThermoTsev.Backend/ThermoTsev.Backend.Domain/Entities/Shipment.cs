@@ -22,5 +22,5 @@ public class Shipment : BaseEntity
 
     public User User { get; set; }
 
-    public List<Analytic> Analytics { get; set; }
+    public List<Analytic> Analytics { get; set; } = [];
 }
