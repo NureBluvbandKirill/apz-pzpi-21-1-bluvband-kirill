@@ -6,21 +6,21 @@ public class Shipment : BaseEntity
 {
     public DateTime StartDate { get; set; }
 
-    public int StartLocationId { get; set; }
+    public int OriginatingDeliveryLocationId { get; set; }
 
-    public Location StartLocation { get; set; }
+    public DeliveryLocation OriginatingDeliveryLocation { get; set; }
 
     public DateTime EndDate { get; set; }
 
-    public int EndLocationId { get; set; }
+    public int DestinationDeliveryLocationId { get; set; }
 
-    public Location EndLocation { get; set; }
+    public DeliveryLocation EndDeliveryLocation { get; set; }
 
-    public ShipmentCondition ShipmentCondition { get; set; }
+    public ShipmentInfo ShipmentInfo { get; set; }
 
     public ShipmentStatus Status { get; set; }
 
     public User User { get; set; }
 
-    public List<Analytic> Analytics { get; set; } = [];
+    public List<AnalyticsDetail> Analytics { get; set; } = [];
 }

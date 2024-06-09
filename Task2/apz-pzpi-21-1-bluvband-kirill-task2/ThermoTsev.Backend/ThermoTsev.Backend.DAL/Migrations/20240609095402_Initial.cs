@@ -12,7 +12,7 @@ namespace ThermoTsev.Backend.DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Location",
+                name: "Locations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -22,7 +22,7 @@ namespace ThermoTsev.Backend.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Location", x => x.Id);
+                    table.PrimaryKey("PK_Locations", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -33,7 +33,7 @@ namespace ThermoTsev.Backend.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PasswordHashed = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    HashedPassword = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PasswordSalt = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false)
                 },
@@ -49,7 +49,7 @@ namespace ThermoTsev.Backend.DAL.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    isRead = table.Column<bool>(type: "bit", nullable: false),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -70,9 +70,9 @@ namespace ThermoTsev.Backend.DAL.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    StartLocationId = table.Column<int>(type: "int", nullable: false),
+                    OriginatingDeliveryLocationId = table.Column<int>(type: "int", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndLocationId = table.Column<int>(type: "int", nullable: false),
+                    DestinationDeliveryLocationId = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -80,15 +80,15 @@ namespace ThermoTsev.Backend.DAL.Migrations
                 {
                     table.PrimaryKey("PK_Shipments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Shipments_Location_EndLocationId",
-                        column: x => x.EndLocationId,
-                        principalTable: "Location",
+                        name: "FK_Shipments_Locations_DestinationDeliveryLocationId",
+                        column: x => x.DestinationDeliveryLocationId,
+                        principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Shipments_Location_StartLocationId",
-                        column: x => x.StartLocationId,
-                        principalTable: "Location",
+                        name: "FK_Shipments_Locations_OriginatingDeliveryLocationId",
+                        column: x => x.OriginatingDeliveryLocationId,
+                        principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -105,8 +105,8 @@ namespace ThermoTsev.Backend.DAL.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Metric = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MetricTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MetricValue = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ShipmentId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -161,14 +161,14 @@ namespace ThermoTsev.Backend.DAL.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Shipments_EndLocationId",
+                name: "IX_Shipments_DestinationDeliveryLocationId",
                 table: "Shipments",
-                column: "EndLocationId");
+                column: "DestinationDeliveryLocationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Shipments_StartLocationId",
+                name: "IX_Shipments_OriginatingDeliveryLocationId",
                 table: "Shipments",
-                column: "StartLocationId");
+                column: "OriginatingDeliveryLocationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Shipments_UserId",
@@ -192,7 +192,7 @@ namespace ThermoTsev.Backend.DAL.Migrations
                 name: "Shipments");
 
             migrationBuilder.DropTable(
-                name: "Location");
+                name: "Locations");
 
             migrationBuilder.DropTable(
                 name: "Users");

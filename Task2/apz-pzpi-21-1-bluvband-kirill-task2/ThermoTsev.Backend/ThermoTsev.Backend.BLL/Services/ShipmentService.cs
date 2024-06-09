@@ -16,9 +16,9 @@ public class ShipmentService(DataContext context) : IShipmentService
         try
         {
             List<Shipment> shipments = context.Shipments
-                .Include(s => s.StartLocation)
-                .Include(s => s.EndLocation)
-                .Include(s => s.ShipmentCondition)
+                .Include(s => s.OriginatingDeliveryLocation)
+                .Include(s => s.EndDeliveryLocation)
+                .Include(s => s.ShipmentInfo)
                 .ToList();
             return Result.Ok(shipments);
         }
@@ -33,9 +33,9 @@ public class ShipmentService(DataContext context) : IShipmentService
         try
         {
             Shipment? shipment = context.Shipments
-                .Include(s => s.StartLocation)
-                .Include(s => s.EndLocation)
-                .Include(s => s.ShipmentCondition)
+                .Include(s => s.OriginatingDeliveryLocation)
+                .Include(s => s.EndDeliveryLocation)
+                .Include(s => s.ShipmentInfo)
                 .Include(s => s.User)
                 .FirstOrDefault(s => s.Id == id);
 
@@ -53,29 +53,27 @@ public class ShipmentService(DataContext context) : IShipmentService
     {
         try
         {
-            EntityEntry<Location> startLocation = context.Locations.Add(
-                new Location()
+            EntityEntry<DeliveryLocation> startLocation = context.Locations.Add(
+                new DeliveryLocation()
                 {
-                    Latitude = shipment.StartLocationLatitude,
-                    Longitude = shipment.StartLocationLongitude,
+                    Latitude = shipment.OriginatingDeliveryLocationLatitude,
+                    Longitude = shipment.OriginatingDeliveryLocationLongitude,
                 }
             );
 
-            EntityEntry<Location> endLocation = context.Locations.Add(
-                new Location()
+            EntityEntry<DeliveryLocation> endLocation = context.Locations.Add(
+                new DeliveryLocation()
                 {
-                    Latitude = shipment.EndLocationLatitude,
-                    Longitude = shipment.EndLocationLongitude,
+                    Latitude = shipment.DestinationDeliveryLocationLatitude,
+                    Longitude = shipment.DestinationDeliveryLocationLongitude,
                 }
             );
 
-            EntityEntry<ShipmentCondition> shipmentCondition = context.ShipmentConditions.Add(
-                new ShipmentCondition()
+            EntityEntry<ShipmentInfo> shipmentCondition = context.ShipmentConditions.Add(
+                new ShipmentInfo()
                 {
-                    MinTemperature = shipment.MinTemperature,
-                    MaxTemperature = shipment.MaxTemperature,
-                    MinHumidity = shipment.MinHumidity,
-                    MaxHumidity = shipment.MaxHumidity,
+                    MinAllowedTemperature = shipment.MinAllowedTemperature,
+                    MaxAllowedTemperature = shipment.MaxAllowedTemperature,
                 }
             );
 
@@ -85,10 +83,10 @@ public class ShipmentService(DataContext context) : IShipmentService
                 new Shipment()
                 {
                     StartDate = shipment.StartDate,
-                    StartLocation = startLocation.Entity,
+                    OriginatingDeliveryLocation = startLocation.Entity,
                     EndDate = shipment.EndDate,
-                    EndLocation = endLocation.Entity,
-                    ShipmentCondition = shipmentCondition.Entity,
+                    EndDeliveryLocation = endLocation.Entity,
+                    ShipmentInfo = shipmentCondition.Entity,
                     Status = ShipmentStatus.Pending,
                     User = foundedUser,
                 }
@@ -107,24 +105,22 @@ public class ShipmentService(DataContext context) : IShipmentService
         try
         {
             Shipment? existingShipment = context.Shipments
-                .Include(s => s.StartLocation)
-                .Include(s => s.EndLocation)
-                .Include(s => s.ShipmentCondition)
+                .Include(s => s.OriginatingDeliveryLocation)
+                .Include(s => s.EndDeliveryLocation)
+                .Include(s => s.ShipmentInfo)
                 .FirstOrDefault(s => s.Id == updatedShipment.Id);
 
             if (existingShipment == null)
                 return Result.Fail<UpdateShipmentDto>("Shipment not found");
 
             existingShipment.StartDate = updatedShipment.StartDate;
-            existingShipment.StartLocation.Latitude = updatedShipment.StartLocationLatitude;
-            existingShipment.StartLocation.Longitude = updatedShipment.StartLocationLongitude;
+            existingShipment.OriginatingDeliveryLocation.Latitude = updatedShipment.OriginatingDeliveryLocationLatitude;
+            existingShipment.OriginatingDeliveryLocation.Longitude = updatedShipment.OriginatingDeliveryLocationLongitude;
             existingShipment.EndDate = updatedShipment.EndDate;
-            existingShipment.EndLocation.Latitude = updatedShipment.EndLocationLatitude;
-            existingShipment.EndLocation.Longitude = updatedShipment.EndLocationLongitude;
-            existingShipment.ShipmentCondition.MinTemperature = updatedShipment.MinTemperature;
-            existingShipment.ShipmentCondition.MaxTemperature = updatedShipment.MaxTemperature;
-            existingShipment.ShipmentCondition.MinHumidity = updatedShipment.MinHumidity;
-            existingShipment.ShipmentCondition.MaxHumidity = updatedShipment.MaxHumidity;
+            existingShipment.EndDeliveryLocation.Latitude = updatedShipment.DestinationDeliveryLocationLatitude;
+            existingShipment.EndDeliveryLocation.Longitude = updatedShipment.DestinationDeliveryLocationLongitude;
+            existingShipment.ShipmentInfo.MinAllowedTemperature = updatedShipment.MinAllowedTemperature;
+            existingShipment.ShipmentInfo.MaxAllowedTemperature = updatedShipment.MaxAllowedTemperature;
             existingShipment.Status = updatedShipment.Status;
 
             context.SaveChanges();

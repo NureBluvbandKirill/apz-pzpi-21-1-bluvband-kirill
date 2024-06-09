@@ -22,7 +22,7 @@ namespace ThermoTsev.Backend.DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ThermoTsev.Backend.Domain.Entities.Analytic", b =>
+            modelBuilder.Entity("ThermoTsev.Backend.Domain.Entities.AnalyticsDetail", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,7 +30,11 @@ namespace ThermoTsev.Backend.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Metric")
+                    b.Property<string>("MetricTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MetricValue")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -40,10 +44,6 @@ namespace ThermoTsev.Backend.DAL.Migrations
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ShipmentId");
@@ -51,7 +51,7 @@ namespace ThermoTsev.Backend.DAL.Migrations
                     b.ToTable("Analytics");
                 });
 
-            modelBuilder.Entity("ThermoTsev.Backend.Domain.Entities.Location", b =>
+            modelBuilder.Entity("ThermoTsev.Backend.Domain.Entities.DeliveryLocation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -70,7 +70,7 @@ namespace ThermoTsev.Backend.DAL.Migrations
                     b.ToTable("Locations");
                 });
 
-            modelBuilder.Entity("ThermoTsev.Backend.Domain.Entities.Notification", b =>
+            modelBuilder.Entity("ThermoTsev.Backend.Domain.Entities.EmergencyNotification", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -78,15 +78,15 @@ namespace ThermoTsev.Backend.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("isRead")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -103,17 +103,17 @@ namespace ThermoTsev.Backend.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("DestinationDeliveryLocationId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EndLocationId")
+                    b.Property<int>("OriginatingDeliveryLocationId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("StartLocationId")
-                        .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -123,16 +123,16 @@ namespace ThermoTsev.Backend.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EndLocationId");
+                    b.HasIndex("DestinationDeliveryLocationId");
 
-                    b.HasIndex("StartLocationId");
+                    b.HasIndex("OriginatingDeliveryLocationId");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("Shipments");
                 });
 
-            modelBuilder.Entity("ThermoTsev.Backend.Domain.Entities.ShipmentCondition", b =>
+            modelBuilder.Entity("ThermoTsev.Backend.Domain.Entities.ShipmentInfo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -140,16 +140,10 @@ namespace ThermoTsev.Backend.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<float>("MaxHumidity")
+                    b.Property<float>("MaxAllowedTemperature")
                         .HasColumnType("real");
 
-                    b.Property<float>("MaxTemperature")
-                        .HasColumnType("real");
-
-                    b.Property<float>("MinHumidity")
-                        .HasColumnType("real");
-
-                    b.Property<float>("MinTemperature")
+                    b.Property<float>("MinAllowedTemperature")
                         .HasColumnType("real");
 
                     b.Property<int>("ShipmentId")
@@ -175,11 +169,11 @@ namespace ThermoTsev.Backend.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("HashedPassword")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PasswordHashed")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -195,7 +189,7 @@ namespace ThermoTsev.Backend.DAL.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("ThermoTsev.Backend.Domain.Entities.Analytic", b =>
+            modelBuilder.Entity("ThermoTsev.Backend.Domain.Entities.AnalyticsDetail", b =>
                 {
                     b.HasOne("ThermoTsev.Backend.Domain.Entities.Shipment", "Shipment")
                         .WithMany("Analytics")
@@ -206,7 +200,7 @@ namespace ThermoTsev.Backend.DAL.Migrations
                     b.Navigation("Shipment");
                 });
 
-            modelBuilder.Entity("ThermoTsev.Backend.Domain.Entities.Notification", b =>
+            modelBuilder.Entity("ThermoTsev.Backend.Domain.Entities.EmergencyNotification", b =>
                 {
                     b.HasOne("ThermoTsev.Backend.Domain.Entities.User", "User")
                         .WithMany("Notifications")
@@ -219,15 +213,15 @@ namespace ThermoTsev.Backend.DAL.Migrations
 
             modelBuilder.Entity("ThermoTsev.Backend.Domain.Entities.Shipment", b =>
                 {
-                    b.HasOne("ThermoTsev.Backend.Domain.Entities.Location", "EndLocation")
-                        .WithMany("EndShipments")
-                        .HasForeignKey("EndLocationId")
+                    b.HasOne("ThermoTsev.Backend.Domain.Entities.DeliveryLocation", "EndDeliveryLocation")
+                        .WithMany("DestinationShipments")
+                        .HasForeignKey("DestinationDeliveryLocationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ThermoTsev.Backend.Domain.Entities.Location", "StartLocation")
-                        .WithMany("StartShipments")
-                        .HasForeignKey("StartLocationId")
+                    b.HasOne("ThermoTsev.Backend.Domain.Entities.DeliveryLocation", "OriginatingDeliveryLocation")
+                        .WithMany("OriginatingShipments")
+                        .HasForeignKey("OriginatingDeliveryLocationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -237,36 +231,36 @@ namespace ThermoTsev.Backend.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("EndLocation");
+                    b.Navigation("EndDeliveryLocation");
 
-                    b.Navigation("StartLocation");
+                    b.Navigation("OriginatingDeliveryLocation");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ThermoTsev.Backend.Domain.Entities.ShipmentCondition", b =>
+            modelBuilder.Entity("ThermoTsev.Backend.Domain.Entities.ShipmentInfo", b =>
                 {
                     b.HasOne("ThermoTsev.Backend.Domain.Entities.Shipment", "Shipment")
-                        .WithOne("ShipmentCondition")
-                        .HasForeignKey("ThermoTsev.Backend.Domain.Entities.ShipmentCondition", "ShipmentId")
+                        .WithOne("ShipmentInfo")
+                        .HasForeignKey("ThermoTsev.Backend.Domain.Entities.ShipmentInfo", "ShipmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Shipment");
                 });
 
-            modelBuilder.Entity("ThermoTsev.Backend.Domain.Entities.Location", b =>
+            modelBuilder.Entity("ThermoTsev.Backend.Domain.Entities.DeliveryLocation", b =>
                 {
-                    b.Navigation("EndShipments");
+                    b.Navigation("DestinationShipments");
 
-                    b.Navigation("StartShipments");
+                    b.Navigation("OriginatingShipments");
                 });
 
             modelBuilder.Entity("ThermoTsev.Backend.Domain.Entities.Shipment", b =>
                 {
                     b.Navigation("Analytics");
 
-                    b.Navigation("ShipmentCondition")
+                    b.Navigation("ShipmentInfo")
                         .IsRequired();
                 });
 

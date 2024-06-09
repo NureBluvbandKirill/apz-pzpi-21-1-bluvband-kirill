@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using ThermoTsev.Backend.API.Middlewares;
 using ThermoTsev.Backend.BLL;
 using ThermoTsev.Backend.DAL;
 
@@ -65,3 +66,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.UseMiddleware<JwtMiddleware>();
+
+app.Run();

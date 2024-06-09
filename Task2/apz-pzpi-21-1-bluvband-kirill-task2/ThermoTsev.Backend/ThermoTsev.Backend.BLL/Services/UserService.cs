@@ -39,7 +39,7 @@ public class UserService(DataContext context) : IUserService
                 Name = user.Name,
                 Role = user.Role,
                 Email = user.Email,
-                PasswordHashed = hashedPassword,
+                HashedPassword = hashedPassword,
                 PasswordSalt = salt,
             }
         );
@@ -93,7 +93,7 @@ public class UserService(DataContext context) : IUserService
             Name = signUpDto.Name,
             Role = Role.User,
             Email = signUpDto.Email,
-            PasswordHashed = hashedPassword,
+            HashedPassword = hashedPassword,
             PasswordSalt = salt,
         };
 
@@ -109,7 +109,7 @@ public class UserService(DataContext context) : IUserService
 
         if (user != null && IsPasswordValid(
                 password,
-                user.PasswordHashed,
+                user.HashedPassword,
                 user.PasswordSalt
             ))
         {

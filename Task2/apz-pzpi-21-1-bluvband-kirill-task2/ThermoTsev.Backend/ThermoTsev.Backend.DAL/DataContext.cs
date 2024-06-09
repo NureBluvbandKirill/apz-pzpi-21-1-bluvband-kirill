@@ -7,35 +7,35 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
 {
     public DbSet<User> Users { get; set; } = null!;
 
-    public DbSet<Notification> Notifications  { get; set; } = null!;
+    public DbSet<EmergencyNotification> Notifications  { get; set; } = null!;
 
     public DbSet<Shipment> Shipments { get; set; } = null!;
 
-    public DbSet<Location> Locations { get; set; } = null!;
+    public DbSet<DeliveryLocation> Locations { get; set; } = null!;
 
-    public DbSet<ShipmentCondition> ShipmentConditions { get; set; } = null!;
+    public DbSet<ShipmentInfo> ShipmentConditions { get; set; } = null!;
 
-    public DbSet<Analytic> Analytics { get; set; } = null!;
+    public DbSet<AnalyticsDetail> Analytics { get; set; } = null!;
 
     override protected void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         
         modelBuilder.Entity<Shipment>()
-            .HasOne(s => s.StartLocation)
-            .WithMany(l => l.StartShipments)
-            .HasForeignKey(s => s.StartLocationId)
+            .HasOne(s => s.OriginatingDeliveryLocation)
+            .WithMany(l => l.OriginatingShipments)
+            .HasForeignKey(s => s.OriginatingDeliveryLocationId)
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Shipment>()
-            .HasOne(s => s.EndLocation)
-            .WithMany(l => l.EndShipments)
-            .HasForeignKey(s => s.EndLocationId)
+            .HasOne(s => s.EndDeliveryLocation)
+            .WithMany(l => l.DestinationShipments)
+            .HasForeignKey(s => s.DestinationDeliveryLocationId)
             .OnDelete(DeleteBehavior.Restrict);
         
-        modelBuilder.Entity<ShipmentCondition>()
+        modelBuilder.Entity<ShipmentInfo>()
             .HasOne(sc => sc.Shipment)
-            .WithOne(s => s.ShipmentCondition)
-            .HasForeignKey<ShipmentCondition>(sc => sc.ShipmentId);
+            .WithOne(s => s.ShipmentInfo)
+            .HasForeignKey<ShipmentInfo>(sc => sc.ShipmentId);
     }
 }

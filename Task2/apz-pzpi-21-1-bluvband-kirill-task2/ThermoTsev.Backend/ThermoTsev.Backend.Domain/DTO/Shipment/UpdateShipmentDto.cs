@@ -8,23 +8,19 @@ public record UpdateShipmentDto
     
     public DateTime StartDate { get; set; }
     
-    public float StartLocationLatitude { get; set; }
+    public float OriginatingDeliveryLocationLatitude { get; set; }
     
-    public float StartLocationLongitude { get; set; }
+    public float OriginatingDeliveryLocationLongitude { get; set; }
     
     public DateTime EndDate { get; set; }
     
-    public float EndLocationLatitude { get; set; }
+    public float DestinationDeliveryLocationLatitude { get; set; }
     
-    public float EndLocationLongitude { get; set; }
+    public float DestinationDeliveryLocationLongitude { get; set; }
     
-    public float MinTemperature { get; set; }
+    public float MinAllowedTemperature { get; set; }
     
-    public float MaxTemperature { get; set; }
-    
-    public float MinHumidity { get; set; }
-    
-    public float MaxHumidity { get; set; }
+    public float MaxAllowedTemperature { get; set; }
     
     public ShipmentStatus Status { get; set; }
 }

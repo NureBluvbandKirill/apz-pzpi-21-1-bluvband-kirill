@@ -8,7 +8,7 @@ public class User : BaseEntity
 
     public string Email { get; set; }
 
-    public string PasswordHashed { get; set; }
+    public string HashedPassword { get; set; }
 
     public string PasswordSalt { get; set; }
 
@@ -16,5 +16,5 @@ public class User : BaseEntity
 
     public List<Shipment> Shipments { get; set; }
 
-    public List<Notification> Notifications { get; set; }
+    public List<EmergencyNotification> Notifications { get; set; }
 }

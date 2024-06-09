@@ -13,7 +13,7 @@ public static class DependencyRegistrar
         services.AddScoped<IShipmentService, ShipmentService>();
         services.AddScoped<IStatisticService, StatisticService>();
         services.AddScoped<IIoTProviderService, IoTProviderService>();
-        services.AddScoped<INotificationService, NotificationService>();
-        services.AddScoped<IAnalyticService, AnalyticService>();
+        services.AddScoped<IEmergencyNotificationService, EmergencyNotificationService>();
+        services.AddScoped<IAnalyticsService, AnalyticsService>();
     }
 }
