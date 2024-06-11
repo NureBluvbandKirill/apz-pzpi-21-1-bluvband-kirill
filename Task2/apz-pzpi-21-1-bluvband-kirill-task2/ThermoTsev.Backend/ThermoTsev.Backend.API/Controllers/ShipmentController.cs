@@ -18,10 +18,7 @@ public class ShipmentsController(IShipmentService shipmentService, IIoTProviderS
     {
         Result<ShipmentLocationDto?> result = await ioTProviderService.GetCurrentShipmentLocation(shipmentId);
 
-        if (result.IsSuccess)
-            return Ok(result.Value);
-
-        return NotFound(result.Errors);
+        return result.IsSuccess ? Ok(result.Value) : NotFound(result.Errors);
     }
     
     [HttpGet]
@@ -29,10 +26,7 @@ public class ShipmentsController(IShipmentService shipmentService, IIoTProviderS
     {
         Result<List<Shipment>> result = shipmentService.GetAllShipments();
 
-        if (result.IsSuccess)
-            return Ok(result.Value);
-
-        return BadRequest(result.Errors);
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Errors);
     }
 
     [HttpGet("{id:int}")]
@@ -40,10 +34,7 @@ public class ShipmentsController(IShipmentService shipmentService, IIoTProviderS
     {
         Result<Shipment> result = shipmentService.GetShipmentById(id);
 
-        if (result.IsSuccess)
-            return Ok(result.Value);
-
-        return NotFound(result.Errors);
+        return result.IsSuccess ? Ok(result.Value) : NotFound(result.Errors);
     }
 
     [HttpPost]
@@ -52,10 +43,7 @@ public class ShipmentsController(IShipmentService shipmentService, IIoTProviderS
         int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         Result<CreateShipmentDto> result = shipmentService.CreateShipment(userId, shipment);
 
-        if (result.IsSuccess)
-            return Ok("Successfully created");
-
-        return BadRequest(result.Errors);
+        return result.IsSuccess ? Ok("Successfully created") : BadRequest(result.Errors);
     }
 
     [HttpPut("{id:int}")]
@@ -66,10 +54,7 @@ public class ShipmentsController(IShipmentService shipmentService, IIoTProviderS
 
         Result<UpdateShipmentDto> result = shipmentService.UpdateShipment(updatedShipment);
 
-        if (result.IsSuccess)
-            return Ok(result.Value);
-
-        return BadRequest(result.Errors);
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Errors);
     }
 
     [HttpDelete("{id:int}")]
@@ -77,9 +62,6 @@ public class ShipmentsController(IShipmentService shipmentService, IIoTProviderS
     {
         Result result = shipmentService.DeleteShipment(id);
 
-        if (result.IsSuccess)
-            return NoContent();
-
-        return BadRequest(result.Errors);
+        return result.IsSuccess ? NoContent() : BadRequest(result.Errors);
     }
 }

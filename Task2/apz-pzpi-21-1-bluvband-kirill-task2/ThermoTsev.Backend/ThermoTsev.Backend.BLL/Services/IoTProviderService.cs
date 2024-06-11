@@ -19,19 +19,23 @@ public class IoTProviderService(DataContext context, IConfiguration configuratio
     {
         try
         {
+            // Get shipment by id
             Shipment? shipment = context.Shipments.FirstOrDefault(s => s.Id == shipmentId);
 
             if (shipment == null)
                 return Result.Fail<ShipmentLocationDto?>("Shipment not found");
 
+            // Make an http request to API
             HttpResponseMessage response = await _httpClient.GetAsync($"{_apiUrl}/getCurrentShipmentLocation?shipmentId={shipmentId}");
 
             if (!response.IsSuccessStatusCode)
                 return Result.Fail<ShipmentLocationDto?>($"Failed to retrieve location from API. Status code: {response.StatusCode}");
 
+            // Get content as JSON string
             string content = await response.Content.ReadAsStringAsync();
             ShipmentLocationDto? locationDto = JsonConvert.DeserializeObject<ShipmentLocationDto>(content);
 
+            // Return mapped success response as DTO
             return Result.Ok(locationDto);
         }
         catch (Exception ex)
@@ -40,28 +44,32 @@ public class IoTProviderService(DataContext context, IConfiguration configuratio
         }
     }
 
-    public async Task<Result<ShipmentConditionDto?>> GetCurrentShipmentCondition(int shipmentId)
+    public async Task<Result<ShipmentInfoDto?>> GetCurrentShipmentInfo(int shipmentId)
     {
         try
         {
+            // Get shipment by id
             Shipment? shipment = context.Shipments.FirstOrDefault(s => s.Id == shipmentId);
 
             if (shipment == null)
-                return Result.Fail<ShipmentConditionDto?>("Shipment not found");
+                return Result.Fail<ShipmentInfoDto?>("Shipment not found");
 
+            // Make an http request to API
             HttpResponseMessage response = await _httpClient.GetAsync($"{_apiUrl}/getCurrentShipmentCondition?shipmentId={shipmentId}");
 
             if (!response.IsSuccessStatusCode)
-                return Result.Fail<ShipmentConditionDto?>($"Failed to retrieve condition from API. Status code: {response.StatusCode}");
+                return Result.Fail<ShipmentInfoDto?>($"Failed to retrieve condition from API. Status code: {response.StatusCode}");
 
+            // Get content as JSON string
             string content = await response.Content.ReadAsStringAsync();
-            ShipmentConditionDto? conditionDto = JsonConvert.DeserializeObject<ShipmentConditionDto>(content);
+            ShipmentInfoDto? conditionDto = JsonConvert.DeserializeObject<ShipmentInfoDto>(content);
 
+            // Return mapped success response as DTO
             return Result.Ok(conditionDto);
         }
         catch (Exception ex)
         {
-            return Result.Fail<ShipmentConditionDto?>(ex.Message);
+            return Result.Fail<ShipmentInfoDto?>(ex.Message);
         }
     }
 }

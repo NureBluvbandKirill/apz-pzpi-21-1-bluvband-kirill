@@ -7,13 +7,13 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
 {
     public DbSet<User> Users { get; set; } = null!;
 
-    public DbSet<EmergencyNotification> Notifications  { get; set; } = null!;
+    public DbSet<EmergencyNotification> EmergencyNotifications  { get; set; } = null!;
 
     public DbSet<Shipment> Shipments { get; set; } = null!;
 
-    public DbSet<DeliveryLocation> Locations { get; set; } = null!;
+    public DbSet<DeliveryLocation> DeliveryLocations { get; set; } = null!;
 
-    public DbSet<ShipmentInfo> ShipmentConditions { get; set; } = null!;
+    public DbSet<ShipmentInfo> ShipmentInfos { get; set; } = null!;
 
     public DbSet<AnalyticsDetail> Analytics { get; set; } = null!;
 

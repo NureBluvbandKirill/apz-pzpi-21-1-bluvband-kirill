@@ -6,7 +6,7 @@ using ThermoTsev.Backend.Domain.Enums;
 
 namespace ThermoTsev.Backend.BLL.Services;
 
-public class StatisticService(DataContext context) : IStatisticService
+public class StatisticsService(DataContext context) : IStatisticsService
 {
     public Result<List<ShipmentCountPerDayDto>> GetShipmentsStartCountPerDayLastMonth()
     {

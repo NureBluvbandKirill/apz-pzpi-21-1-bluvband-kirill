@@ -11,7 +11,7 @@ public class EmergencyNotificationService(DataContext context) : IEmergencyNotif
 {
     public async Task<Result<EmergencyNotificationDto>> GetEmergencyNotificationById(int emergencyNotificationId)
     {
-        EmergencyNotification? notification = await context.Notifications
+        EmergencyNotification? notification = await context.EmergencyNotifications
             .FindAsync(emergencyNotificationId);
 
         return notification == null ? Result.Fail<EmergencyNotificationDto>($"Notification with id {emergencyNotificationId} not found.") : Result.Ok(new EmergencyNotificationDto(notification.Message, notification.IsRead));
@@ -19,7 +19,7 @@ public class EmergencyNotificationService(DataContext context) : IEmergencyNotif
 
     public async Task<Result<List<EmergencyNotificationDto>>> GetAllEmergencyNotifications()
     {
-        List<EmergencyNotification> notifications = await context.Notifications
+        List<EmergencyNotification> notifications = await context.EmergencyNotifications
             .ToListAsync();
 
         return Result.Ok(
@@ -38,7 +38,7 @@ public class EmergencyNotificationService(DataContext context) : IEmergencyNotif
             User = foundedUser,
         };
 
-        context.Notifications.Add(emergencyNotification);
+        context.EmergencyNotifications.Add(emergencyNotification);
         await context.SaveChangesAsync();
 
         return Result.Ok(new EmergencyNotificationDto(emergencyNotification.Message, emergencyNotification.IsRead));
@@ -46,7 +46,7 @@ public class EmergencyNotificationService(DataContext context) : IEmergencyNotif
 
     public async Task<Result<EmergencyNotificationDto>> UpdateEmergencyNotification(int emergencyNotificationId, EmergencyNotificationDto emergencyNotificationDto)
     {
-        EmergencyNotification? existingNotification = await context.Notifications
+        EmergencyNotification? existingNotification = await context.EmergencyNotifications
             .FindAsync(emergencyNotificationId);
 
         if (existingNotification == null)
@@ -63,7 +63,7 @@ public class EmergencyNotificationService(DataContext context) : IEmergencyNotif
 
     public async Task<Result> DeleteEmergencyNotification(int emergencyNotificationId)
     {
-        EmergencyNotification? notification = await context.Notifications
+        EmergencyNotification? notification = await context.EmergencyNotifications
             .FindAsync(emergencyNotificationId);
 
         if (notification == null)
@@ -71,7 +71,7 @@ public class EmergencyNotificationService(DataContext context) : IEmergencyNotif
             return Result.Fail($"Notification with id {emergencyNotificationId} not found.");
         }
 
-        context.Notifications.Remove(notification);
+        context.EmergencyNotifications.Remove(notification);
         await context.SaveChangesAsync();
 
         return Result.Ok();

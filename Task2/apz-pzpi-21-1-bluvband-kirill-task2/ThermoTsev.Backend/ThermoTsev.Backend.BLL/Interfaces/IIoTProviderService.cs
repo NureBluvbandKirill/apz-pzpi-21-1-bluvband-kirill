@@ -7,5 +7,5 @@ public interface IIoTProviderService
 {
     Task<Result<ShipmentLocationDto?>> GetCurrentShipmentLocation(int shipmentId);
 
-    Task<Result<ShipmentConditionDto?>> GetCurrentShipmentCondition(int shipmentId);
+    Task<Result<ShipmentInfoDto?>> GetCurrentShipmentInfo(int shipmentId);
 }

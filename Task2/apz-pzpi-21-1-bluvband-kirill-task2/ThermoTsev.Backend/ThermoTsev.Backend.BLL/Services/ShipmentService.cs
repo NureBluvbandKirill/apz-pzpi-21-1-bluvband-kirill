@@ -53,7 +53,7 @@ public class ShipmentService(DataContext context) : IShipmentService
     {
         try
         {
-            EntityEntry<DeliveryLocation> startLocation = context.Locations.Add(
+            EntityEntry<DeliveryLocation> startLocation = context.DeliveryLocations.Add(
                 new DeliveryLocation()
                 {
                     Latitude = shipment.OriginatingDeliveryLocationLatitude,
@@ -61,7 +61,7 @@ public class ShipmentService(DataContext context) : IShipmentService
                 }
             );
 
-            EntityEntry<DeliveryLocation> endLocation = context.Locations.Add(
+            EntityEntry<DeliveryLocation> endLocation = context.DeliveryLocations.Add(
                 new DeliveryLocation()
                 {
                     Latitude = shipment.DestinationDeliveryLocationLatitude,
@@ -69,7 +69,7 @@ public class ShipmentService(DataContext context) : IShipmentService
                 }
             );
 
-            EntityEntry<ShipmentInfo> shipmentCondition = context.ShipmentConditions.Add(
+            EntityEntry<ShipmentInfo> shipmentCondition = context.ShipmentInfos.Add(
                 new ShipmentInfo()
                 {
                     MinAllowedTemperature = shipment.MinAllowedTemperature,

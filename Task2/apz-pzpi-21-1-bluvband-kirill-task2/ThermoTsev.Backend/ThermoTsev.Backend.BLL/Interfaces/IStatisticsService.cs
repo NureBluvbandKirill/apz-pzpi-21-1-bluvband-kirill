@@ -3,7 +3,7 @@ using ThermoTsev.Backend.Domain.DTO.ShipmentCount;
 
 namespace ThermoTsev.Backend.BLL.Interfaces;
 
-public interface IStatisticService
+public interface IStatisticsService
 {
     Result<List<ShipmentCountPerDayDto>> GetShipmentsStartCountPerDayLastMonth();
 

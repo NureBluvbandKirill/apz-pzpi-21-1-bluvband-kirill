@@ -10,21 +10,21 @@ namespace ThermoTsev.Backend.API.Middlewares;
 
 public class JwtMiddleware(RequestDelegate next)
 {
-    public async Task Invoke(HttpContext context, IJwtService jwtService)
+    public Task Invoke(HttpContext context, IJwtService jwtService)
     {
         string? token = context.Request.Headers.Authorization.FirstOrDefault()?.Split(" ")[^1];
 
         if (token != null)
             AttachUserToContext(context, jwtService, token);
 
-        await next(context);
+        return next(context);
     }
 
     private static void AttachUserToContext(HttpContext context, IJwtService jwtService, string token)
     {
         try
         {
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            JwtSecurityTokenHandler tokenHandler = new();
             byte[] key = Encoding.ASCII.GetBytes(jwtService.Configuration["Jwt:Token"]!);
 
             tokenHandler.ValidateToken(token, new TokenValidationParameters
@@ -45,7 +45,7 @@ public class JwtMiddleware(RequestDelegate next)
         }
         catch
         {
-            // ignored
+            // do nothing
         }
     }
 }

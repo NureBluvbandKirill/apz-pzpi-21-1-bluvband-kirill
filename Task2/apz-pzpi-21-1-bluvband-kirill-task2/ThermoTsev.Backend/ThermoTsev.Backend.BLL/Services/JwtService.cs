@@ -14,23 +14,23 @@ public class JwtService(IConfiguration configuration) : IJwtService
 
     public string GenerateToken(int userId, Role role)
     {
-        List<Claim> claims =
+        List<Claim> tokenClaims =
         [
+            new Claim(ClaimTypes.Role, role.ToString()),
             new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-            new Claim(ClaimTypes.Role, role.ToString())
         ];
 
-        SymmetricSecurityKey key = new SymmetricSecurityKey(
+        SymmetricSecurityKey jwtEncKey = new(
             Encoding.UTF8.GetBytes(
                 Configuration.GetSection("Jwt:Token")
                     .Value!
             )
         );
-        SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-        JwtSecurityToken token = new JwtSecurityToken(
-            claims: claims,
+        SigningCredentials signingCredentials = new(jwtEncKey, SecurityAlgorithms.HmacSha512Signature);
+        JwtSecurityToken token = new(
+            claims: tokenClaims,
             expires: DateTime.Now.AddDays(1),
-            signingCredentials: credentials
+            signingCredentials: signingCredentials
         );
 
         string? jwt = new JwtSecurityTokenHandler().WriteToken(token);

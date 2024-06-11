@@ -16,5 +16,5 @@ public class User : BaseEntity
 
     public List<Shipment> Shipments { get; set; }
 
-    public List<EmergencyNotification> Notifications { get; set; }
+    public List<EmergencyNotification> EmergencyNotifications { get; set; }
 }
