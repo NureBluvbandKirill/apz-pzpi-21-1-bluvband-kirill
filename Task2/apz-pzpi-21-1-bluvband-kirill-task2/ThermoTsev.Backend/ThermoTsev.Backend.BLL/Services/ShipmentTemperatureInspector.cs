@@ -39,7 +39,8 @@ public class ShipmentTemperatureInspector(
 
     private IEnumerable<int> GetShipmentsToProcess()
     {
-        IShipmentService shipmentService = serviceProvider.GetRequiredService<IShipmentService>();
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IShipmentService shipmentService = scope.ServiceProvider.GetRequiredService<IShipmentService>();
 
         List<Shipment> inTransitShipments = shipmentService.GetShipmentsByStatus(ShipmentStatus.InTransit);
 
@@ -48,9 +49,10 @@ public class ShipmentTemperatureInspector(
 
     private async Task ProcessShipment(int shipmentId)
     {
-        IIoTProviderService ioTProviderService = serviceProvider.GetRequiredService<IIoTProviderService>();
-        IShipmentService shipmentService = serviceProvider.GetRequiredService<IShipmentService>();
-        IAnalyticsService analyticsService = serviceProvider.GetRequiredService<IAnalyticsService>();
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IIoTProviderService ioTProviderService = scope.ServiceProvider.GetRequiredService<IIoTProviderService>();
+        IShipmentService shipmentService = scope.ServiceProvider.GetRequiredService<IShipmentService>();
+        IAnalyticsService analyticsService = scope.ServiceProvider.GetRequiredService<IAnalyticsService>();
 
         Result<ShipmentInfoDto?> shipmentInfo = await ioTProviderService.GetCurrentShipmentInfo(shipmentId);
         Result<Shipment> shipment = shipmentService.GetShipmentById(shipmentId);
@@ -71,7 +73,8 @@ public class ShipmentTemperatureInspector(
 
     private async Task SendEmergencyNotificationIfNeeded(Shipment shipment, ShipmentInfoDto shipmentInfoDto)
     {
-        IEmergencyNotificationService emergencyNotificationService = serviceProvider.GetRequiredService<IEmergencyNotificationService>();
+        using IServiceScope scope = serviceProvider.CreateScope();
+        IEmergencyNotificationService emergencyNotificationService = scope.ServiceProvider.GetRequiredService<IEmergencyNotificationService>();
 
         float temperatureDeviation = CalculateDeviation(shipmentInfoDto.Temperature,
             (shipment.ShipmentInfo.MinAllowedTemperature + shipment.ShipmentInfo.MaxAllowedTemperature) / 2);

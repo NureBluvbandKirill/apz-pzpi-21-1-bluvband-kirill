@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using ThermoTsev.Backend.API.Middlewares;
 using ThermoTsev.Backend.BLL;
+using ThermoTsev.Backend.BLL.Services;
 using ThermoTsev.Backend.DAL;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -55,6 +56,8 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 DependencyRegistrar.ConfigureServices(builder.Services);
+
+builder.Services.AddHostedService<ShipmentTemperatureInspector>();
 
 WebApplication app = builder.Build();
 
