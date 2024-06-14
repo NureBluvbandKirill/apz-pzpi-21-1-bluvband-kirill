@@ -1,0 +1,89 @@
+1 МОДЕЛЮВАННЯ ПРОГРАМНОЇ СИСТЕМИ
+
+Головні учасники в системі ThermoTsev: адміністратори перевезень та користувачі. Кожна група користувачів взаємодіє з системою через веб-інтерфейс, мобільний застосунок. Для кращого розуміння та узгодженості взаємодії була розроблена UML-діаграма прецедентів, яку можна знайти в додатку А, рисунок А.1.
+Веб-інтерфейс надає адміністраторам можливість ефективно керувати перевезеннями, дивитись аналітику та статистику по системі та всім перевезенням, налаштовувати параметри безпеки.
+Користувачі в мобільному застосунку матимуть можливість відстеження перевезень у реальному часі та керування своїм перевезенням, отримувати автоматичні сповіщення про зміни статусу перевезення або надзвичайні ситуації.
+IoT-прилади використовуються для під’єднання датчиків до транспортних засобів, які будуть збирати і передавати дані про рух, стан вантажу та інші важливі параметри такі як температура.
+
+2 ПРОЄКТУВАННЯ БАЗИ ДАНИХ
+
+Для проектування бази даних було розроблено ER-діаграму (див. рис. 1). Вона складається з 6 таблиць: користувачі (User), екстренні повідомлення (EmergencyNotification), перевезення (Shipment), розташування доставок (DeliveryLocation), деталі перевезення (ShipmentInfo), аналітика (AnalyticsDetail)
+
+	У базі даних між сутностями є такі зв’язки:
+-	Користувач – Повідомлення (1:М, бо кожен користувач може мати кілька повідомлень);
+-	Користувач – Перевезення (1:М, бо кожен користувач може мати кілька пов’язаних з ним перевезень);
+-	Перевезення  –  Розташування (1:М, бо кожне перевезення може мати декілька розташувань);
+-	Перевезення –  Умови перевезення (1:1, бо кожне перевезення може мати тільки одні умови перевезення);
+-	Перевезення  –  Аналітика (1:М, бо кожне перевезення може мати декілька аналітичних даних, таких як температура);
+Програмна система використовує СКБД Microsoft SQL Server.
+
+3 ТЕХНОЛОГІЇ ТА АРХІТЕКТУРНІ РІШЕННЯ
+
+Для написання серверної частини системи було обрано мову програмування C# з використанням технології ASP.NET Core Web API, яка дозволяє писати ефективний та масштабований код швидко.
+У якості бази даних використано MS SQL Server, до якої здійснюється доступ з серверного застосунку за допомогою технології Entity Framework Core, ORM бібліотеки, яка дозволяє мати взаємодію з базою даних через об’єкти, класи в мові C#, без написання коду на SQL. 
+Для детальнішої візуалізації використаних технологій було розроблено діаграму розгортання (див. рис. 2).
+
+Для тестування та презентації API використовується OpenApi Swagger, веб-інструмент для перегляду API ендпоінтів, та дає можливість відправляти запити на ці ендпоінти під час розробки та тестування. Для забезпечення безпеки даних та конфіденційності використовується захищений протокол HTTPS, який захищає дані під час їх передачі.
+Бібліотека System.Security.Cryptography застосовується для хешування паролів, а JWT (Json Web Tokens) - для створення токенів авторизації, забезпечуючи надійний та безпечний механізм управління доступом користувачів. Передача та отримання даних здійснюються за допомогою REST API.
+Розроблений серверний застосунок побудований за принципами трьох-шарової архітектури та колекції принципів Domain Driven Design, яка складається з: Domain, DAL, BLL та API.
+В архітектуру також були додані міддлвейри (Middlewares), які перехоплюють запити, контролюючи доступи до даних за ролями. Система використовує міддлвейр JwtMiddleware, який валідує токен, юзера та роль юзера. Також, використовуюється middleware Authorize. Архітектура серверного (Back-End) застосунку представлена на діаграмі пакетів (див. додаток Б рис. Б.1).
+
+4 СПЕЦИФІКАЦІЯ REST
+
+REST API в даному проекті складається із 29 кінцевих точок. Кожна кінцева точка відповідає за надання даних користувачеві та виконання бізнес логіки.
+Специфікація кожного ендпоінту наведена у виді таблиці (див. таб. 1)
+	Таблиця 1 – Специфікація REST
+Назва	Метод	Шлях
+GetAnalytics	GET	/Api/Analytics
+GetAnalyticDetails	GET	/Api/Analytics/{analyticsDetailId}
+UpdateAnalyticDetails	PUT	/Api/Analytics/{analyticsDetailId}
+DeleteAnalyticDetails	DELETE	/Api/Analytics/{analyticsDetailId}
+CreateAnalyticDetails	POST	/Api/Analytics/{shipmentId}
+GetEmergencyNotifications	GET	/Api/EmergencyNotification
+CreateEmergencyNotification	POST	/Api/EmergencyNotification
+GetEmergencyNotificationDetails	GET	/Api/EmergencyNotification/{emergencyNotificationId}
+UpdateEmergencyNotificationDetails	PUT	/Api/EmergencyNotification/{emergencyNotificationId}
+DeleteEmergencyNotificationDetails	DELETE	/Api/EmergencyNotification/{emergencyNotificationId}
+GetShipments	GET	/Api/Shipments
+CreateShipment	POST	/Api/Shipments
+GetCurrentShipmentLocation	GET	/Api/Shipments/GetCurrentShipmentLocation/{shipmentId}
+GetShipmentDetails	GET	/Api/Shipments/{id}
+UpdateShipmentDetails	PUT	/Api/Shipments/{id}
+DeleteShipmentDetails	DELETE	/Api/Shipments/{id}
+GetAverageShipmentsPerDay	GET	/Api/Statistic/AverageShipmentsPerDay
+GetDeliveredShipmentCount	GET	/Api/Statistic/DeliveredShipmentCount
+GetShipmentCountLastWeek	GET	/Api/Statistic/ShipmentCountLastWeek
+GetShipmentsEndCountPerDayLastMonth	GET	/Api/Statistic/ShipmentsEndCountPerDayLastMonth
+GetShipmentsStartCountPerDayLastMonth	GET	/Api/Statistic/ShipmentsStartCountPerDayLastMonth
+GetUserCount	GET	/Api/Statistic/UserCount
+GetUsers	GET	/Api/User
+CreateUser	POST	/Api/User
+LoginUser	POST	/Api/User/Login
+SignUpUser	POST	/Api/User/SignUp
+GetUserDetails	GET	/Api/User/{id}
+UpdateUserDetails	PUT	/Api/User/{id}
+DeleteUserDetails	DELETE	/Api/User/{id}
+GetAnalytics	GET	/Api/Analytics
+GetAnalyticDetails	GET	/Api/Analytics/{analyticsDetailId}
+UpdateAnalyticDetails	PUT	/Api/Analytics/{analyticsDetailId}
+DeleteAnalyticDetails	DELETE	/Api/Analytics/{analyticsDetailId}
+CreateAnalyticDetails	POST	/Api/Analytics/{shipmentId}
+GetEmergencyNotifications	GET	/Api/EmergencyNotification
+CreateEmergencyNotification	POST	/Api/EmergencyNotification
+GetEmergencyNotificationDetails	GET	/Api/EmergencyNotification/{emergencyNotificationId}
+UpdateEmergencyNotificationDetails	PUT	/Api/EmergencyNotification/{emergencyNotificationId}
+DeleteEmergencyNotificationDetails	DELETE	/Api/EmergencyNotification/{emergencyNotificationId}
+GetShipments	GET	/Api/Shipments
+CreateShipment	POST	/Api/Shipments
+GetCurrentShipmentLocation	GET	/Api/Shipments/GetCurrentShipmentLocation/{shipmentId}
+GetShipmentDetails	GET	/Api/Shipments/{id}
+UpdateShipmentDetails	PUT	/Api/Shipments/{id}
+DeleteShipmentDetails	DELETE	/Api/Shipments/{id}
+GetAverageShipmentsPerDay	GET	/Api/Statistic/AverageShipmentsPerDay
+GetDeliveredShipmentCount	GET	/Api/Statistic/DeliveredShipmentCount
+GetShipmentCountLastWeek	GET	/Api/Statistic/ShipmentCountLastWeek
+GetShipmentsEndCountPerDayLastMonth	GET	/Api/Statistic/ShipmentsEndCountPerDayLastMonth
+
+ВИСНОВКИ
+
+У ході виконання лабораторної роботи були отримані навички з проєктування серверної частини програмної системи, розробки сценаріїв використання, діаграм розгортання та пакетів, проєктуванні бази даних. Була розроблена програмна реалізація серверної частини програмної системи за допомогою мови програмування C#.
